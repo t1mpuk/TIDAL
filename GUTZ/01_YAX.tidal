@@ -1,0 +1,463 @@
+
+-- Var kick / off kick, Add build -- End fragile -- Pan sine dom
+
+hush
+
+sparkle
+
+all $ (|* gain 0.82)
+
+-- Watch roll cpu
+--  P1 Direct (P1_2 Fade) > P2 - FDR3 Fade (P2_3 Direct)
+--  C1_7 (Mute) + P2_1 (Off) > C2_2 > FDR2 Direct > C1_2 > C1_3 > P2_1 Fade
+do  setcps (116/60/4)
+    clock
+--  D1
+    let -- CHNL
+        g_fdr1 = gain (r 0 1 $ fdr1)
+        g_p1_1 = gain (r 0 1 $ p1_1)
+        g_p1_2 = gain (r 0 1 $ p1_2)
+        g_p1_3 = gain (r 0 1 $ p1_3)
+    --  FX
+        fx = [
+            ("r1", (# (room 0.12 # sz 0.99 |* gain 0.9 # orbit 5))),
+            ("k3", (# krush 3)), ("k2", (# krush 2)),
+            ("f2", fast 2), ("f4", fast 4),
+            ("s2", slow 2), ("s4", slow 4),
+            ("r", rev), ("sr", srev),
+            ("rl", roll 0.125)
+            ]
+        rvb = room 0.1 # sz 0.8 |* gain 0.95 # orbit 5
+    --  PATS
+        ps = [
+        --  MAIN KICK
+            ("FR", stack [
+                swingBy (3/6) 7 $ fast 4 $ s "bds:44" # legato 1 # lpf 1500 -- # rvb
+                |* gain 1.2 ]),
+        --  HH
+            ("P1", stack [
+                fast 4 $ s "~ hhs:20" -- # rvb
+                |* gain 0.82 ]),
+        --  SCTR SNARE
+            ("P2", stack [
+                every 4 ((slow 2).(str 2)) $ juxr $ roll 0.25 $ swingBy (6/8) 4 $ s "hhs:15(5,8)" #  begin ((0.125 <~) $ (r 0 0.3 $ rand))
+                # hpf 600 # hpq ((0.25 <~) $ (r 0 0.5 $ rand)) # lpf (r 500 900 $ slow 8 tri) # lpq 0.25 # rvb
+                |* gain 1 ]),
+        --  FAST KICK
+            ("P3", stack [
+                swingBy (5/4) 4 $ fast 4 $ s "bds:09" # nudge 0.25 # sp 1.45 # legato 0.75-- # rvb
+                |* gain 1.1 ]),
+        --  OFF
+            ("O", stack [ s "~" |* gain 1 ])]
+    --  $
+        c1_1 = stack [
+              ur 4 "FR:rl FR"
+              ps fx |* g_fdr1
+            , every 4 (chop 3) $ ur 8 "P1!2 P1:r1 P1!3 P1:r1 P1"
+              ps fx |* g_p1_1
+            , ur 4 "P2!3 P2:r1"
+              ps fx |* g_p1_2
+            , ur 4 "P3!3 P3:r"
+              ps fx |* g_p1_3
+            ]
+        c1_2 = stack [ fast 4 $ s "k2:20*4 ~" # cmc,
+              ur 4 "0"
+              ps fx |* g_fdr1
+            , slow 4 $ str 2 $ every 4 (chop 6) $ ur 8 "P1!2 P1:r1 P1!3 P1:r1 P1"
+              ps fx |* g_p1_1
+            , ur 4 "0"
+              ps fx |* g_p1_2
+            , ur 4 "0"
+              ps fx |* g_p1_3
+            ]
+        c1_3 = stack [
+              ur 4 "FR:r1 FR!3"
+              ps fx |* g_fdr1
+            , slow 4 $ str 4 $ every 4 (chop 3) $ ur 8 "P1!2 P1:r1 P1!3 P1:r1 P1"
+              ps fx |* g_p1_1
+            , ur 4 "P2:s2!3 P2:r1"
+              ps fx |* g_p1_2
+            , every 3 (str 4) $ ur 4 "P3:s4"
+              ps fx |* g_p1_3
+            ]
+        c1_4 = stack [
+              ur 4 "FR:rl FR:k2 FR!2"
+              ps fx |* g_fdr1
+            , slow 4 $ str 4 $ every 4 (chop 3) $ ur 8 "P1!2 P1:r1 P1!3 P1:r1 P1"
+              ps fx |* g_p1_1
+            , ur 4 "P2:s2!3 P2:r1"
+              ps fx |* g_p1_2
+            , every 3 (str 2) $ ur 4 "P3:s2"
+              ps fx |* g_p1_3
+            ]
+        c1_5 = stack [
+              ur 4 "FR:rl FR"
+              ps fx |* g_fdr1
+            , slow 2 $ every 4 (chop 3) $ ur 8 "P1!2 P1:r1 P1!3 P1:r1 P1"
+              ps fx |* g_p1_1
+            , ur 4 "P2:s2!3 P2:r1"
+              ps fx |* g_p1_2
+            , ur 4 "P3!3 P3:r"
+              ps fx |* g_p1_3
+            ]
+        c1_6 = stack [
+              ur 4 "FR:rl FR"
+              ps fx |* g_fdr1
+            , every 4 (chop 3) $ ur 8 "P1!2 P1:r1 P1!3 P1:r1 P1"
+              ps fx |* g_p1_1
+            , ur 4 "P2!3 P2:r1"
+              ps fx |* g_p1_2
+            , ur 4 "P3!3 P3:r"
+              ps fx |* g_p1_3
+            ]
+        c1_7 = stack [ fast 4 $ s "k2:-36*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr1
+            , ur 4 "B"
+              ps fx |* g_p1_1
+            , ur 4 "C"
+              ps fx |* g_p1_2
+            , ur 4 "D"
+              ps fx |* g_p1_3
+            ]
+        c1Map = M.fromList([ (48, c1_1), (44, c1_2), (40, c1_3), (36, c1_4), (32, c1_5), (28, c1_6), (24, c1_7) ])
+    d1  $ stack [ bl1, stack [ capply (cI 48 "chnl1") c1Map c1_1 ]
+        ]
+--  D2
+    let -- CHNL
+        g_fdr2 = gain (r 0 1 $ fdr2)
+        g_p2_1 = gain (r 0 1 $ p2_1)
+        g_p2_2 = gain (r 0 1 $ p2_2)
+        g_p2_3 = gain (r 0 1 $ p2_3)
+    --  FX
+        fx = [
+            ("r1", (# (room 0.15 # sz 0.9 # coarse 2 |* gain 1.15 # orbit 6))),
+            ("k3", (# krush 3)), ("k2", (# krush 2)),
+            ("f2", fast 2), ("f4", fast 4),
+            ("s2", slow 2),
+            ("r", rev), ("sr", srev)
+            ]
+        rvb = room 0.6 # sz 0.95 |* gain 0.9 # orbit 6
+    --  PATS
+        ps = [
+        --  SNARE
+            ("FR", stack [
+                fast 2 $ s "~ sds:25" # nudge (slow 2 "0.005 0.0015") # begin (r 0.1 0.15 $ slow 2 rand) # sp (slow 2 "0.78 0.8") # legato 0.8
+                # hpf 160 # hpq 0.25 # lpf 250 # phasdp 1 # phasr 0.5 # pan (slow 2 "0.65 0.35") -- # rvb
+                |* gain 1.55 ]),
+        --  DBL HH
+            ("P1", stack [
+                fast 16 $ s "hhs:87" # legato 1 # hpf 1500 # hpq 0.25 # lpf 2000 # pan (slow 16 (r 0 1 $ sine)) # rvb
+                |* gain 1.1 ]),
+        --  LOW HH
+            ("P2", stack [
+                juxBy 0.75 (srev) $ loopAt 4 $ str 8 $ unitc "bass1:2" # nudge 0.0125 # begin ((0.5 ~>) $ (r 0.5 0.7 $ rand)) 
+                # hpf 255 # hpq 0.25 # lpf 280 # lpq 0 # sp (slow 2 "1.9 1.8 1.5 1.7") -- # rvb
+                |* gain 1.5 ]),
+        --  STATIC RUB / EXTRA HH
+            ("P3", stack [
+            --    every 4 (off 0.125 (juxBy 0.25 ((rev).(spin 4).(# hpf 2800).(# hpq 0.21)))) $ swingBy (7/11) 8 $ roll 0.5 $ s "bps:7" # pan (fast 2 "0.3 0.7") # rvb
+            --    |* gain 0.8,
+                fast 4 $ s "hhs:35" # pan (slow 2 "0.75 0.25") -- # rvb
+                |* gain 0.4 ]),
+        --  OFF
+            ("O", stack [ s "~" |* gain 1 ])]
+    --  $
+        c2_1 = stack [
+              ur 4 "FR"
+              ps fx |* g_fdr2
+            , ur 8 "P1!2 P1:r1 P1!2 P1:r1 P1!2"
+              ps fx |* g_p2_1
+            , ur 8 "P2:r P2!7"
+              ps fx |* g_p2_2
+            , ur 8 "P3"
+              ps fx |* g_p2_3
+            ]
+        c2_2 = stack [ fast 4 $ s "k2:23*4 ~" # cmc,
+              ur 4 "FR"
+              ps fx |* g_fdr2
+            , ur 8 "0"
+              ps fx |* g_p2_1
+            , ur 8 "P2:r P2!7"
+              ps fx |* g_p2_2
+            , ur 1 "0"
+              ps fx |* g_p2_3
+            ]
+        c2_3 = stack [
+              ur 4 "FR"
+              ps fx |* g_fdr2
+            , slow 4 $ ur 8 "P1!2 P1:r1 P1!2 P1:r1 P1!2"
+              ps fx |* g_p2_1
+            , ur 8 "P2:r P2!7"
+              ps fx |* g_p2_2
+            , ur 1 "P3"
+              ps fx |* g_p2_3
+            ]
+        c2_4 = stack [
+              ur 4 "FR"
+              ps fx |* g_fdr2
+            , slow 4 $ ur 8 "P1!2 P1:r1 P1!2 P1:r1 P1!2"
+              ps fx |* g_p2_1
+            , ur 8 "P2:r P2!7"
+              ps fx |* g_p2_2
+            , ur 1 "P3:f2"
+              ps fx |* g_p2_3
+            ]
+        c2_5 = stack [
+              ur 4 "FR"
+              ps fx |* g_fdr2
+            , slow 2 $ ur 8 "P1!2 P1:r1 P1:s2"
+              ps fx |* g_p2_1
+            , ur 8 "P2:r P2!7"
+              ps fx |* g_p2_2
+            , ur 8 "P3 P3:r P3:s2 P3:s4"
+              ps fx |* g_p2_3
+            ]
+        c2_6 = stack [
+              ur 4 "FR"
+              ps fx |* g_fdr2
+            , rev $ ur 8 "P1:s2!2 P1:r1 P1:s2!2 P1:r1 P1!2"
+              ps fx |* g_p2_1
+            , ur 8 "P2:r P2!7"
+              ps fx |* g_p2_2
+            , fast 2 $ ur 8 "P3"
+              ps fx |* g_p2_3
+            ]
+        c2_7 = stack [ fast 4 $ s "k2:-33*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr2
+            , ur 4 "B"
+              ps fx |* g_p2_1
+            , ur 4 "C"
+              ps fx |* g_p2_2
+            , ur 4 "D"
+              ps fx |* g_p2_3
+            ]
+        c2Map = M.fromList([ (51, c2_1), (47, c2_2), (43, c2_3), (39, c2_4), (35, c2_5), (31, c2_6), (27, c2_7) ])
+    d2  $ stack [ bl2, stack [ capply (cI 51 "chnl2") c2Map c2_1 ]
+        ]
+--  D3
+    let -- CHNL
+        g_fdr3 = gain (r 0 1 $ fdr3)
+        g_p3_1 = gain (r 0 1 $ p3_1)
+        g_p3_2 = gain (r 0 1 $ p3_2)
+        g_p3_3 = gain (r 0 1 $ p3_3)
+    --  FX
+        fx = [
+            ("r8", (# (room (r 0 0.95 $ p3_3) # sz 0.99 # shape (r 0.2 0 $ p3_3) # orbit 7))),
+            ("k3", (# krush 3)), ("k2", (# krush 2)),
+            ("f2", fast 2), ("f4", fast 4),
+            ("s2", slow 2), ("s4", slow 4),
+            ("r", rev), ("sr", srev)
+            ]
+        rvb = room 0.75 # sz 0.95 |* gain 0.9 # orbit 7
+    --  PATS
+        ps = [
+            ("FR", stack [
+                -- off (slow 16 "0.25 0.25 0.25 0.5") ((rev).(# sp (slow 8 "0.25 0.25 0.25 0.3")).(# pan (r 0.1 0.9 $ sine)).(|* g_p3_1).(|* gain 0.52)) 
+                loopAt 4 $ swingBy (7/11) 5 $ s "pad:1" # nudge 1 # begin ((0.25 <~) $ (r 0.25 0.3 $ rand)) # sp (slow 2 "0.15 0.2") # legato 1 # hpf 220 # pan (slow 2 "0.65 0.35") # krush 3 # rvb
+                |* gain 0.92 ]),
+            ("P1", stack [
+                slow 8 $ off 0.125 ((juxsr).(str 8).(# begin (fast 4 "0.20 0.23 0.75 0.18")).(# sp 0.19).(# legato "0.2 0.5").(# crush 7).(|* g_p3_2).(|* gain 0.7)) $ loopAt 4 $ swingBy (7/11) 5 $ unitc "rclvox" # begin 0.1 # nudge 0.015 # sp (slow 8 "0.7 0.68") # legato 0.5 # krush 1 # rvb
+                |* gain 0.8 ]),
+        --  OFF
+            ("O", stack [ s "~" |* gain 1 ])
+            ]
+    --  $
+        c3_1 = stack [
+              ur 8 "FR!3 FR:r FR!3 FR:s2"
+              ps fx |* g_fdr3
+            , ur 4 "P1"
+              ps fx |* g_p3_1
+            ]
+        c3_2 = stack [
+              ur 8 "FR!3 FR:r FR!3 FR:s2"
+              ps fx |* g_fdr3
+            , ur 4 "P1:sr"
+              ps fx |* g_p3_1
+            ]
+        c3_3 = stack [ fast 4 $ s "k2:-19*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr3
+            , ur 4 "B"
+              ps fx |* g_p3_1
+            , ur 4 "C"
+              ps fx |* g_p3_2
+            , ur 4 "D"
+              ps fx |* g_p3_3
+            ]
+        c3_4 = stack [ fast 4 $ s "k2:-23*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr3
+            , ur 4 "B"
+              ps fx |* g_p3_1
+            , ur 4 "C"
+              ps fx |* g_p3_2
+            , ur 4 "D"
+              ps fx |* g_p3_3
+            ]
+        c3_5 = stack [ fast 4 $ s "k2:-27*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr3
+            , ur 4 "B"
+              ps fx |* g_p3_1
+            , ur 4 "C"
+              ps fx |* g_p3_2
+            , ur 4 "D"
+              ps fx |* g_p3_3
+            ]
+        c3_6 = stack [ fast 4 $ s "k2:-31*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr3
+            , ur 4 "B"
+              ps fx |* g_p3_1
+            , ur 4 "C"
+              ps fx |* g_p3_2
+            , ur 4 "D"
+              ps fx |* g_p3_3
+            ]
+        c3_7 = stack [ fast 4 $ s "k2:-35*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr3
+            , ur 4 "B"
+              ps fx |* g_p3_1
+            , ur 4 "C"
+              ps fx |* g_p3_2
+            , ur 4 "D"
+              ps fx |* g_p3_3
+            ]
+        c3Map = M.fromList([ (49, c3_1), (45, c3_2), (41, c3_3), (37, c3_4), (33, c3_5), (29, c3_6), (25, c3_7) ])
+    d3  $ stack [ bl3, stack [ capply (cI 49 "chnl3") c3Map c3_1 ]
+        ]
+--  D4
+    let -- CHNL
+        g_fdr4 = gain (r 0 1 $ fdr4)
+        g_p4_1 = gain (r 0 1 $ p4_1)
+        g_p4_2 = gain (r 0 1 $ p4_2)
+        g_p4_3 = gain (r 0 1 $ p4_3)
+    --  FX
+        fx = [
+            ("r8", (# (room (r 0 0.05 $ p4_3) # sz 0.6 # shape (r 0.3 0 $ p4_3) # orbit 8))),
+            ("k3", (# krush 3)), ("k2", (# krush 2)),
+            ("f2", fast 2), ("f4", fast 4),
+            ("s2", slow 2), ("s4", slow 4),
+            ("r", rev), ("sr", srev)
+            ]
+        rvb = room (r 0 0.8 $ p4_3) # sz 0.95 # shape (r 0.5 0 $ p4_3) # orbit 8
+        sqz = squiz (r 0.9 10 $ p4_2)
+    --  PATS
+        ps = [
+            ("FR", stack [
+                loopAt 4 $ swingBy (7/11) 5 $ unitc "flbass:13*3" # sp 1 # nudge 0.525 # hpf 100 # hpq 0.25
+                |* gain (fast 8 "1 0.8 0.7 0.6") # phaserrate (r 100 200 $ fast 4 sine) # phaserdepth (r 0.75 0.5 $ fast 4 sine)
+                # hpf 150 # hpq 0.5 # lpf 800 # lpq 0.75 # coarse 20 # pan (fast 4 "0.35 0.65") # rvb
+                |* gain 1 ]),
+            ("P1", stack [
+                slow 4 $ str 4 $ unitc "rclvox:3*2 rclvox:3" # sp 0.75 # nudge 0.75 # pan (fast 2 "0.1 0.9") # rvb
+                |* gain 0.4 ]),
+            ("P2", stack [
+                note (scale "diminished" "[[4*2 6][4*2][3][~].[6 4][3*2][~][6]]/2") # s "wrld:10" # sp 0.15 # legato 1 # hpf 250 # krush 2 # pan (r 0.7 0.3 $ slow 4 sine) # rvb
+                |* gain 0.65 ]),
+            ("P3", stack [
+                s "~" -- # rvb
+                |* gain 1 ]),
+        --  OFF
+            ("O", stack [ s "~" |* gain 1 ])]
+    --  $
+        c4_1 = stack [
+              ur 8 "FR"
+              ps fx |* g_fdr4
+            , ur 4 "P1 P1:r"
+              ps fx |* g_p4_1
+            , ur 4 "P2!3 P2:r"
+              ps fx |* g_p4_2
+            , ur 4 "P3"
+              ps fx |* g_p4_3
+            ]
+        c4_2 = stack [
+              ur 4 "FR:s4 FR:r"
+              ps fx # nudge 0.75 |* g_fdr4
+            , slow 4 $ ur 4 "P1 P1:r"
+              ps fx |* g_p4_1
+            , ur 4 "P2!3 P2:r"
+              ps fx |* g_p4_2
+            , ur 4 "P3"
+              ps fx |* g_p4_3
+            ]
+        c4_3 = stack [ fast 4 $ s "k2:-18*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr4
+            , ur 4 "B"
+              ps fx |* g_p4_1
+            , ur 4 "C"
+              ps fx |* g_p4_2
+            , ur 4 "D"
+              ps fx |* g_p4_3
+            ]
+        c4_4 = stack [ fast 4 $ s "k2:-22*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr4
+            , ur 4 "B"
+              ps fx |* g_p4_1
+            , ur 4 "C"
+              ps fx |* g_p4_2
+            , ur 4 "D"
+              ps fx |* g_p4_3
+            ]
+        c4_5 = stack [ fast 4 $ s "k2:-26*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr4
+            , ur 4 "B"
+              ps fx |* g_p4_1
+            , ur 4 "C"
+              ps fx |* g_p4_2
+            , ur 4 "D"
+              ps fx |* g_p4_3
+            ]
+        c4_6 = stack [ fast 4 $ s "k2:-30*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr4
+            , ur 4 "B"
+              ps fx |* g_p4_1
+            , ur 4 "C"
+              ps fx |* g_p4_2
+            , ur 4 "D"
+              ps fx |* g_p4_3
+            ]
+        c4_7 = stack [ fast 4 $ s "k2:-34*4 ~" # cmc,
+              ur 4 "A"
+              ps fx |* g_fdr4
+            , ur 4 "B"
+              ps fx |* g_p4_1
+            , ur 4 "C"
+              ps fx |* g_p4_2
+            , ur 4 "D"
+              ps fx |* g_p4_3
+            ]
+        c4Map = M.fromList([ (50, c4_1), (46, c4_2), (42, c4_3), (38, c4_4), (34, c4_5), (30, c4_6), (26, c4_7) ])
+    d4  $ stack [ bl4, stack [ capply (cI 50 "chnl4") c4Map c4_1 ]
+        ]
+
+hush
+        
+sparkle
+
+d5 $ silence
+
+do  -- GANTI
+    let mvol = gain 1
+    let 
+        gt_1 = stack [ s "~" ]
+        gt_2 = stack [ s "~" # release 0.5 ]
+        gt_3 = stack [ s "~" # release 0.25 ]
+        gt_4 = stack [ s "~" ]
+        gtMap = M.fromList([ (12, gt_1), (13, gt_2), (14, gt_3), (15, gt_4) ])
+    d5  $ stack [ gtl, stack [ capply (cI 12 "ganti") gtMap gt_1 ]
+        ]
+    d1  $ silence
+    d2  $ silence
+    d3  $ silence
+    d4  $ silence
+    
+
+  hush

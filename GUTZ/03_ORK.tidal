@@ -1,0 +1,256 @@
+-- CHECK -- cymbal/gong +  variant -- Melody pass slow --
+
+
+hush
+
+sparkle
+
+do  setcps (126/60/4)
+    clock
+--- D1
+    let -- MKIK
+        mkikfx = lpf 800 # shape 0.5
+        g_fdr1 = gain (r 0 1 $ fdr1)
+        -- PKIK
+        pkikfx = pan (slow 2 "0.3 0.7") # lpf 500
+        g_p1_1 = gain (r 0 0.95 $ p1_1)
+        -- PAT
+        patfx = begin ((0.125 <~) $ (r 0.05 0.2 $ rand)) # lpf (slow 32 "1150 1100 1100 1000") # lpq 0.5 # krush 3 # pan (slow 16 "0.4 0.6")
+        g_p1_2 = gain (r 0 0.75 $ p1_2)
+        -- GRF
+        grffx = sp 1 # nudge (slow 2 "0.25 0.5") # coarse 2 # pan (slow 4 "0.7 0.3")
+        g_p1_3 = gain (r 0 0.55 $ p1_3)
+    --  $
+        c1_1 = stack [
+              s "bds:20*4" # mkikfx # g_fdr1
+            , fast 2 $ rarely rev $ s "bds:21(6,8)" # pkikfx # g_p1_1
+            , fast 4 $ s "~ hhs:55" # patfx # g_p1_2
+            , slow 1 $ swingBy (7/11) 2 $ unitc "sds:87" # grffx # g_p1_3
+            ]
+        c1_2 = stack [
+              s "bds:20*2" # mkikfx # g_fdr1
+            , slow 2 $ rarely rev $ s "bds:21(1,3)" # pkikfx # nudge 0.25 # g_p1_1
+            , fast 2 $ s "~ hhs:55" # patfx # g_p1_2
+            , slow 2 $ swingBy (7/11) 2 $ unitc "sds:87" # grffx # g_p1_3
+            ]
+        c1_3 = stack [ fast 4 $ s "k2:-20*4 ~" # cmc,
+              s "~" # g_fdr1
+            , s "~" # g_p1_1
+            , s "~" # g_p1_2
+            , s "~" # g_p1_3
+            ]
+        c1_4 = stack [ fast 4 $ s "k2:-24*4 ~" # cmc,
+              s "~" # g_fdr1
+            , s "~" # g_p1_1
+            , s "~" # g_p1_2
+            , s "~" # g_p1_3
+            ]
+        c1_5 = stack [ fast 4 $ s "k2:-28*4 ~" # cmc,
+              s "~" # g_fdr1
+            , s "~" # g_p1_1
+            , s "~" # g_p1_2
+            , s "~" # g_p1_3
+            ]
+        c1_6 = stack [ fast 4 $ s "k2:-32*4 ~" # cmc,
+              s "~" # g_fdr1
+            , s "~" # g_p1_1
+            , s "~" # g_p1_2
+            , s "~" # g_p1_3
+            ]
+        c1_7 = stack [ fast 4 $ s "k2:-36*4 ~" # cmc,
+              s "~" # g_fdr1
+            , s "~" # g_p1_1
+            , s "~" # g_p1_2
+            , s "~" # g_p1_3
+            ]
+        c1Map = M.fromList([ (48, c1_1), (44, c1_2), (40, c1_3), (36, c1_4), (32, c1_5), (28, c1_6), (24, c1_7) ])
+    d1  $ stack [ bl1, stack [ capply (cI 48 "chnl1") c1Map c1_1 ]
+        ]
+--- D2
+    let -- LSR
+        lsrfx = nudge 0.495 # begin ((0.25 ~>) $ (r 0.12 0.2 $ rand)) # sp 0.4 # legato 5.5 # hpf 150 # hpq 0.5 # lpf 300 # coarse 20
+            # pan (slow 8 (r 0.25 0.75 sine))
+        g_fdr2 = gain (r 0 1.9 $ fdr2)
+        -- KUP
+        kupfx = sp ((0.5 ~>) $ (r 0.25 1 $ rand)) # nudge 0.25 # hpf 200 # hpq 0.25 # lpf 900 # pan (fast 8 (r 0 1 rand))
+        g_p2_1 = gain (r 0 0.75 $ p2_1)
+        -- KOP
+        kopfx = hpf 350 # hpq 0.25 # lpf 400 # pan (slow 16 (r 1 0 sine))
+        g_p2_2 = gain (r 0 0.7 $ p2_2)
+        --
+        e_p2_3 = room (r 0 0.25 $ p2_3) # sz 0.9 # shape (r 0.18 0 $ p2_3)
+    --  $
+        c2_1 = stack [
+              fast 2 $ s "~ sds:29" # lsrfx # g_fdr2
+            , every 4 (juxr) $ swingBy (2/4) "2 4 8" $ s "sds:36" # kupfx # g_p2_1
+            , fast 4 $ off 0.25 (every 4 ((# hpf 300))) $ s "~ hhs:76" # kopfx # g_p2_2
+            ]
+        c2_2 = stack [
+              slow 2 $ s "~ sds:29" # lsrfx # g_fdr2
+            , slow 16 $ every 4 (juxr) $ swingBy (2/4) "2 4 8" $ s "sds:36" # kupfx # g_p2_1
+            , slow 4 $ off 0.25 (every 4 ((# hpf 300))) $ s "~ hhs:76" # kopfx # g_p2_2
+            ]
+        c2_3 = stack [ fast 4 $ s "k2:-17*4 ~" # cmc,
+              s "~" # g_fdr2
+            , s "~" # g_p2_1
+            , s "~" # g_p2_2
+            ]
+        c2_4 = stack [ fast 4 $ s "k2:-21*4 ~" # cmc,
+              s "~" # g_fdr2
+            , s "~" # g_p2_1
+            , s "~" # g_p2_2
+            ]
+        c2_5 = stack [ fast 4 $ s "k2:-25*4 ~" # cmc,
+              s "~" # g_fdr2
+            , s "~" # g_p2_1
+            , s "~" # g_p2_2
+            ]
+        c2_6 = stack [ fast 4 $ s "k2:-29*4 ~" # cmc,
+              s "~" # g_fdr2
+            , s "~" # g_p2_1
+            , s "~" # g_p2_2
+            ]
+        c2_7 = stack [ fast 4 $ s "k2:-33*4 ~" # cmc,
+              s "~" # g_fdr2
+            , s "~" # g_p2_1
+            , s "~" # g_p2_2
+            ]
+        c2Map = M.fromList([ (51, c2_1), (47, c2_2), (43, c2_3), (39, c2_4), (35, c2_5), (31, c2_6), (27, c2_7) ])
+    d2  $ stack [ bl2, stack [ capply (cI 51 "chnl2") c2Map c2_1 ]
+            # e_p2_3
+        ]
+--- D3
+    let -- PDR
+        pdrfx = legato 1 # nudge 0.25 # hpf 255 # lpf 260 # pan "0.2 0.8"
+        g_fdr3 = gain (r 0 0.8 $ fdr3)
+        -- DOB
+        dobfx = sp (slow 4 "8 7.8") # legato 1 # hpf 100 # hpq 0.2 # lpf 200 # phasr 180 # phasdp 1 # pan (slow 2 (r 0.4 0.6 sine))
+        g_p3_1 = gain (r 0 0.72 $ p3_1)
+        -- BMBL
+        bmblfx = sp (slow 2 "2 5 7 3") # begin ((0.25 <~) $ (r 0.05 0.2 $ rand)) # coarse 20 # hpf 250 # hpq 0.25 # lpf 300 # pan (fast 2 "0.15 0.85")
+        g_p3_2 = gain (r 0 1.1 $ p3_2)
+        -- YSE
+        ysefx = sp 0.65 # nudge 0.25 # begin ((0.5 ~>) $ (fast 8 (r 0.4 0.5 $ rand))) # legato 3 # hpf 2000 # hpq 0.5 # coarse 2 # pan (r 0.2 0.8 rand)
+        g_p3_3 = gain (r 0 0.55 $ p3_3)
+    --  $
+        c3_1 = stack [
+              swingBy (7/11) 4 $ s "cms:36*2" # pdrfx # g_fdr3
+            , unitc "bs:10" # dobfx # g_p3_1
+            , loopAt 2 $ unitc "bds:21*4" # bmblfx # g_p3_2
+            , srev $ swingBy (5/8) 4 $ s "rclvox:2" # ysefx # g_p3_3
+            ]
+        c3_2 = stack [
+              loopAt 4 $ swingBy (7/11) 4 $ unitc "cms:36*2" # pdrfx # g_fdr3
+            , loopAt 2 $ unitc "bs:10" # dobfx # g_p3_1
+            , loopAt 2 $ unitc "bds:21" # bmblfx # g_p3_2
+            , srev $ swingBy (5/8) 4 $ s "rclvox:2" # ysefx # g_p3_3
+            ]
+        c3_3 = stack [ fast 4 $ s "k2:-19*4 ~" # cmc,
+              s "~" # g_fdr3
+            , s "~" # g_p3_1
+            , s "~" # g_p3_2
+            , s "~" # g_p3_3
+            ]
+        c3_4 = stack [ fast 4 $ s "k2:-23*4 ~" # cmc,
+              s "~" # g_fdr3
+            , s "~" # g_p3_1
+            , s "~" # g_p3_2
+            , s "~" # g_p3_3
+            ]
+        c3_5 = stack [ fast 4 $ s "k2:-27*4 ~" # cmc,
+              s "~" # g_fdr3
+            , s "~" # g_p3_1
+            , s "~" # g_p3_2
+            , s "~" # g_p3_3
+            ]
+        c3_6 = stack [ fast 4 $ s "k2:-31*4 ~" # cmc,
+              s "~" # g_fdr3
+            , s "~" # g_p3_1
+            , s "~" # g_p3_2
+            , s "~" # g_p3_3
+            ]
+        c3_7 = stack [ fast 4 $ s "k2:-35*4 ~" # cmc,
+              s "~" # g_fdr3
+            , s "~" # g_p3_1
+            , s "~" # g_p3_2
+            , s "~" # g_p3_3
+            ]
+        c3Map = M.fromList([ (49, c3_1), (45, c3_2), (41, c3_3), (37, c3_4), (33, c3_5), (29, c3_6), (25, c3_7) ])
+    d3  $ stack [ bl3, stack [ capply (cI 49 "chnl3") c3Map c3_1 ]
+        ]
+--- D4
+    let -- KUT
+        kutfx = hpf (fast 8 ((0.125 ~>) $ (r 100 400 $ rand))) # hpq (fast 8 ((0.125 ~>) $ (r 0.5 0 $ rand))) # lpf 800 # pan (fast 8 (r 0.8 0.2 rand))
+        g_fdr4 = gain (r 0 0.8 $ fdr4)
+        -- KOT
+        kotfx = nudge (fast 2 "0.125 0.75 0.25") # sp 1 # begin ((0.25 ~>) $ (r 0.1 0.35 $ rand))
+        g_p4_1 = gain (r 0 0.6 $ p4_1)
+        -- KAT
+        katfx = hpf (slow 2 (r 200 300 sine)) # hpq (slow 2 (r 0 0.25 sine)) # lpf (slow 2 (r 200 100 sine)) # pan (slow 2 (r 0.45 0.55 sine))
+        g_p4_2 = gain (r 0 1.3 $ p4_2)
+        --
+        e_p4_3 = room (r 0 0.15 $ p4_3) # sz 0.95 # shape (r 0.2 0 $ p4_3)
+    --  $
+        c4_1 = stack [
+              slow 4 $ unitc "~ sds:32" # kutfx # g_fdr4
+            , juxBy 0.5 (srev) $ fast 2 $ swingBy (5/8) 6 $ s "sds:94*2" # kotfx # g_p4_1
+            , srev $ slow 4 $ swingBy (4/8) 32 $ unitc "sds:12" # katfx # g_p4_2
+            ]
+        c4_2 = stack [
+              slow 16 $ unitc "~ sds:32" # kutfx # g_fdr4
+            , juxBy 0.5 (srev) $ swingBy (5/8) 6 $ unitc "sds:94*2" # sp 10 # kotfx # g_p4_1
+            , srev $ slow 8 $ swingBy (4/8) 8 $ unitc "sds:12" # katfx # nudge 0.25 # g_p4_2
+            ]
+        c4_3 = stack [ fast 4 $ s "k2:-18*4 ~" # cmc,
+              s "~" # g_fdr4
+            , s "~" # g_p4_1
+            , s "~" # g_p4_2
+            ]
+        c4_4 = stack [ fast 4 $ s "k2:-22*4 ~" # cmc,
+              s "~" # g_fdr4
+            , s "~" # g_p4_1
+            , s "~" # g_p4_2
+            ]
+        c4_5 = stack [ fast 4 $ s "k2:-26*4 ~" # cmc,
+              s "~" # g_fdr4
+            , s "~" # g_p4_1
+            , s "~" # g_p4_2
+            ]
+        c4_6 = stack [ fast 4 $ s "k2:-30*4 ~" # cmc,
+              s "~" # g_fdr4
+            , s "~" # g_p4_1
+            , s "~" # g_p4_2
+            ]
+        c4_7 = stack [ fast 4 $ s "k2:-34*4 ~" # cmc,
+              s "~" # g_fdr4
+            , s "~" # g_p4_1
+            , s "~" # g_p4_2
+            ]
+        c4Map = M.fromList([ (50, c4_1), (46, c4_2), (42, c4_3), (38, c4_4), (34, c4_5), (30, c4_6), (26, c4_7) ])
+    d4  $ stack [ bl4, stack [ capply (cI 50 "chnl4") c4Map c4_1 ]
+            # e_p4_3
+        ]
+
+        hush
+
+        sparkle
+
+hush
+        
+sparkle
+
+d5 $ silence
+
+do  -- GANTI
+    let 
+        gt_1 = stack [ s "~" ]
+        gt_2 = stack [ s "~" # release 0.5 ]
+        gt_3 = stack [ s "~" # release 0.25 ]
+        gt_4 = stack [ s "~" ]
+        gtMap = M.fromList([ (12, gt_1), (13, gt_2), (14, gt_3), (15, gt_4) ])
+    d5  $ stack [ gtl, stack [ capply (cI 12 "ganti") gtMap gt_1 ]
+        ]
+    d1  $ silence
+    d2  $ silence
+    d3  $ silence
+    d4  $ silence

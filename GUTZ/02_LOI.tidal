@@ -1,0 +1,249 @@
+
+hush
+
+sparkle
+
+do  setcps (112/60/4)
+    clock
+--- D1
+    let -- KIK
+        kikfx = sp 45 # hpf 90 # hpq 0.1 # lpf 200
+        g_fdr1 = gain (r 0 1.25 $ fdr1)
+        -- P
+        g_p1_1 = gain (r 0 1.3 $ p1_1)
+        -- P
+        g_p1_2 = gain (r 0 1 $ p1_2)
+        -- P
+        g_p1_3 = gain (r 0 1 $ p1_3)
+    --  $
+        c1_1 = stack [
+            srev $ every 2 ((juxBy 0.2 srev).(ghost).(|* gain 0.85)) $ loopAt 4 $ unitc "bds:3 ~ bd:4*2 ~" # kikfx # g_fdr1,
+            every 4 ((rev).(ply 2).(# lpf 120)) $ s "bds:78*4" # sp (slow 4 "1 0.95") # legato 1 # hpf 90 # hpq 0.45 # lpf 100 # g_p1_1,
+            s "~" # g_p1_2,
+            s "~" # g_p1_3
+            ]
+        c1_2 = stack [
+            s "~" # g_fdr1,
+            s "~" # g_p1_1,
+            s "~" # g_p1_2,
+            s "~" # g_p1_3, fast 4 $ s "k2:-16*4 ~" # midichan 13
+            ]
+        c1_3 = stack [
+            s "~" # g_fdr1,
+            s "~" # g_p1_1,
+            s "~" # g_p1_2,
+            s "~" # g_p1_3, fast 4 $ s "k2:-20*4 ~" # midichan 13
+            ]
+        c1_4 = stack [
+            s "~" # g_fdr1,
+            s "~" # g_p1_1,
+            s "~" # g_p1_2,
+            s "~" # g_p1_3, fast 4 $ s "k2:-24*4 ~" # midichan 13
+            ]
+        c1_5 = stack [
+            s "~" # g_fdr1,
+            s "~" # g_p1_1,
+            s "~" # g_p1_2,
+            s "~" # g_p1_3, fast 4 $ s "k2:-28*4 ~" # midichan 13
+            ]
+        c1_6 = stack [
+            s "~" # g_fdr1,
+            s "~" # g_p1_1,
+            s "~" # g_p1_2,
+            s "~" # g_p1_3, fast 4 $ s "k2:-32*4 ~" # midichan 13
+            ]
+        c1_7 = stack [
+            s "~" # g_fdr1,
+            s "~" # g_p1_1,
+            s "~" # g_p1_2,
+            s "~" # g_p1_3, fast 4 $ s "k2:-36*4 ~" # midichan 13
+            ]
+        c1Map = M.fromList([ (48, c1_1), (44, c1_2), (40, c1_3), (36, c1_4), (32, c1_5), (28, c1_6), (24, c1_7) ])
+    d1  $ stack [ bl1, stack [ capply (cI 48 "chnl1") c1Map c1_1 ]
+        ]
+--- D2
+    let -- FDR
+        g_fdr2 = gain (r 0 1.2 $ fdr2)
+        -- HH
+        g_p2_1 = gain (r 0 0.82 $ p2_1)
+        -- P
+        g_p2_2 = gain (r 0 1 $ p2_2)
+        -- P
+        g_p2_3 = gain (r 0 1 $ p2_3)
+    --  $
+        c2_1 = stack [
+            slow 4 $ swingBy (5/8) 5 $ every 2 ((# sp 7.5).(# pan 0.55)) $ unitc "sds:40" # pan 0.45 # g_fdr2,
+            juxBy 0.5 (slow 2) $ swingBy (5/8) 2 $ off 0.5 ((swingBy (6/8) 4).(# sp 13).(# hpf (slow 2 "500 470")).(# hpq 0.25))
+                $ unitc "hhs:18" # sp 8 # legato 1 # lpf 3000 # g_p2_1,
+            s "~" # g_p2_2,
+            s "~" # g_p2_3
+            ]
+        c2_2 = stack [
+            s "~" # g_fdr2,
+            s "~" # g_p2_1,
+            s "~" # g_p2_2,
+            s "~" # g_p2_3, fast 4 $ s "k2:-13*4 ~" # midichan 13
+            ]
+        c2_3 = stack [
+            s "~" # g_fdr2,
+            s "~" # g_p2_1,
+            s "~" # g_p2_2,
+            s "~" # g_p2_3, fast 4 $ s "k2:-17*4 ~" # midichan 13
+            ]
+        c2_4 = stack [
+            s "~" # g_fdr2,
+            s "~" # g_p2_1,
+            s "~" # g_p2_2,
+            s "~" # g_p2_3, fast 4 $ s "k2:-21*4 ~" # midichan 13
+            ]
+        c2_5 = stack [
+            s "~" # g_fdr2,
+            s "~" # g_p2_1,
+            s "~" # g_p2_2,
+            s "~" # g_p2_3, fast 4 $ s "k2:-25*4 ~" # midichan 13
+            ]
+        c2_6 = stack [
+            s "~" # g_fdr2,
+            s "~" # g_p2_1,
+            s "~" # g_p2_2,
+            s "~" # g_p2_3, fast 4 $ s "k2:-29*4 ~" # midichan 13
+            ]
+        c2_7 = stack [
+            s "~" # g_fdr2,
+            s "~" # g_p2_1,
+            s "~" # g_p2_2,
+            s "~" # g_p2_3, fast 4 $ s "k2:-33*4 ~" # midichan 13
+            ]
+        c2Map = M.fromList([ (51, c2_1), (47, c2_2), (43, c2_3), (39, c2_4), (35, c2_5), (31, c2_6), (27, c2_7) ])
+    d2  $ stack [ bl2, stack [ capply (cI 51 "chnl2") c2Map c2_1 ]
+        ]
+--- D3
+    let -- FDR
+        g_fdr3 = gain (r 0 1 $ fdr3)
+        -- P
+        g_p3_1 = gain (r 0 1 $ p3_1)
+        -- P
+        g_p3_2 = gain (r 0 1 $ p3_2)
+        -- P
+        g_p3_3 = gain (r 0 1 $ p3_3)
+    --  $
+        c3_1 = stack [
+            s "~" # g_fdr3,
+            s "~" # g_p3_1,
+            s "~" # g_p3_2,
+            s "~" # g_p3_3, fast 4 $ s "k2:-11*4 ~" # midichan 13
+            ]
+        c3_2 = stack [
+            s "~" # g_fdr3,
+            s "~" # g_p3_1,
+            s "~" # g_p3_2,
+            s "~" # g_p3_3, fast 4 $ s "k2:-15*4 ~" # midichan 13
+            ]
+        c3_3 = stack [
+            s "~" # g_fdr3,
+            s "~" # g_p3_1,
+            s "~" # g_p3_2,
+            s "~" # g_p3_3, fast 4 $ s "k2:-19*4 ~" # midichan 13
+            ]
+        c3_4 = stack [
+            s "~" # g_fdr3,
+            s "~" # g_p3_1,
+            s "~" # g_p3_2,
+            s "~" # g_p3_3, fast 4 $ s "k2:-23*4 ~" # midichan 13
+            ]
+        c3_5 = stack [
+            s "~" # g_fdr3,
+            s "~" # g_p3_1,
+            s "~" # g_p3_2,
+            s "~" # g_p3_3, fast 4 $ s "k2:-27*4 ~" # midichan 13
+            ]
+        c3_6 = stack [
+            s "~" # g_fdr3,
+            s "~" # g_p3_1,
+            s "~" # g_p3_2,
+            s "~" # g_p3_3, fast 4 $ s "k2:-31*4 ~" # midichan 13
+            ]
+        c3_7 = stack [
+            s "~" # g_fdr3,
+            s "~" # g_p3_1,
+            s "~" # g_p3_2,
+            s "~" # g_p3_3, fast 4 $ s "k2:-35*4 ~" # midichan 13
+            ]
+        c3Map = M.fromList([ (49, c3_1), (45, c3_2), (41, c3_3), (37, c3_4), (33, c3_5), (29, c3_6), (25, c3_7) ])
+    d3  $ stack [ bl3, stack [ capply (cI 49 "chnl3") c3Map c3_1 ]
+        ]
+--- D4
+    let -- FDR
+        g_fdr4 = gain (r 0 0.75 $ fdr4)
+        -- P
+        g_p4_1 = gain (r 0 1 $ p4_1)
+        -- P
+        g_p4_2 = gain (r 0 1 $ p4_2)
+        -- P
+        g_p4_3 = gain (r 0 1 $ p4_3)
+        --
+        c4_1 = stack [
+            juxBy 0.5 (srev) $ str 2 $ off 0.25 ((# sp (slow 4 "0.9 1")).(# hpf 600).(# hpq 0.15)) $ unitc "rclvox:3" # begin ((0.125 <~) $ (r 0.8 0.9 $ rand)) # sp (fast 2 "1.5 1.72 1.68 1.57") # legato 1.5 # hpf 300 # hpq 0.25 # lpf 800 # g_fdr4,
+            s "~" # g_p4_1,
+            s "~" # g_p4_2,
+            s "~" # g_p4_3
+            ]
+        c4_2 = stack [
+            s "~" # g_fdr4,
+            s "~" # g_p4_1,
+            s "~" # g_p4_2,
+            s "~" # g_p4_3, fast 4 $ s "k2:-14*4 ~" # midichan 13
+            ]
+        c4_3 = stack [
+            s "~" # g_fdr4,
+            s "~" # g_p4_1,
+            s "~" # g_p4_2,
+            s "~" # g_p4_3, fast 4 $ s "k2:-18*4 ~" # midichan 13
+            ]
+        c4_4 = stack [
+            s "~" # g_fdr4,
+            s "~" # g_p4_1,
+            s "~" # g_p4_2,
+            s "~" # g_p4_3, fast 4 $ s "k2:-22*4 ~" # midichan 13
+            ]
+        c4_5 = stack [
+            s "~" # g_fdr4,
+            s "~" # g_p4_1,
+            s "~" # g_p4_2,
+            s "~" # g_p4_3, fast 4 $ s "k2:-26*4 ~" # midichan 13
+            ]
+        c4_6 = stack [
+            s "~" # g_fdr4,
+            s "~" # g_p4_1,
+            s "~" # g_p4_2,
+            s "~" # g_p4_3, fast 4 $ s "k2:-30*4 ~" # midichan 13
+            ]
+        c4_7 = stack [
+            s "~" # g_fdr4,
+            s "~" # g_p4_1,
+            s "~" # g_p4_2,
+            s "~" # g_p4_3, fast 4 $ s "k2:-34*4 ~" # midichan 13
+            ]
+        c4Map = M.fromList([ (50, c4_1), (46, c4_2), (42, c4_3), (38, c4_4), (34, c4_5), (30, c4_6), (26, c4_7) ])
+    d4  $ stack [ bl4, stack [ capply (cI 50 "chnl4") c4Map c4_1 ]
+        ]
+
+hush
+
+sparkle
+
+d5 $ silence
+
+do  -- GANTI
+    let 
+        gt_1 = stack [ s "~" ]
+        gt_2 = stack [ s "~" # release 0.5 ]
+        gt_3 = stack [ s "~" # release 0.25 ]
+        gt_4 = stack [ s "~" ]
+        gtMap = M.fromList([ (12, gt_1), (13, gt_2), (14, gt_3), (15, gt_4) ])
+    d5  $ stack [ gtl, stack [ capply (cI 12 "ganti") gtMap gt_1 ]
+        ]
+    d1  $ silence
+    d2  $ silence
+    d3  $ silence
+    d4  $ silence
